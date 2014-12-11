@@ -1,4 +1,8 @@
-/* 
+/*
+ * ** Modification from Kirk Quesnelle - http://www.kirkquesnelle.com **
+ * ** Added in doInOnce function for a one time executation instead of repeated like doIn does **
+ *
+ *
  * onScreen.js
  * Checks if matched elements are inside the viewport.
  *
@@ -18,6 +22,7 @@
       direction: 'vertical',
       toggleClass: null,
       doIn: null,
+      doInOnce: null,
       doOut: null,
       tolerance: 0,
       throttle: null,
@@ -30,16 +35,16 @@
 
       var isOnScreen = false; // Initialize boolean
       var scrollTop; // Initialize Vertical Scroll Position
-      var scrollLeft; // Initialize Horizontal Scroll Position 
+      var scrollLeft; // Initialize Horizontal Scroll Position
       var $el = $(this); // Matched element
-      
+
       // Initialize Viewport dimensions
       var $container;
       var containerHeight;
       var containerWidth;
       var containerBottom;
       var containerRight;
-      
+
       // Initialize element dimensions & position
       var elHeight;
       var elWidth;
@@ -48,7 +53,7 @@
 
       // Checks if params.container is the Window Object
       var containerIsWindow = $.isWindow(params.container);
-      
+
       function verticalIn() {
         if (containerIsWindow) {
           return elTop < containerBottom - params.tolerance &&
@@ -68,7 +73,7 @@
                  -elHeight + params.tolerance > elTop;
         }
       }
-      
+
       function horizontalIn() {
         if (containerIsWindow) {
           return elLeft < containerRight - params.tolerance &&
@@ -78,7 +83,7 @@
                  elLeft > (-elWidth) + params.tolerance;
         }
       }
-      
+
       function horizontalOut() {
         if (containerIsWindow) {
           return elLeft + (elWidth - params.tolerance) < scrollLeft ||
@@ -88,24 +93,24 @@
                  -elWidth + params.tolerance > elLeft;
         }
       }
-      
+
       function directionIn() {
         if (isOnScreen) {
           return false;
         }
-        
+
         if (params.direction === 'horizontal') {
           return horizontalIn();
         } else {
           return verticalIn();
         }
       }
-      
+
       function directionOut() {
         if (!isOnScreen) {
           return false;
         }
-        
+
         if (params.direction === 'horizontal') {
           return horizontalOut();
         } else {
@@ -135,20 +140,20 @@
         };
 
       }
-      
+
       var checkPos = function(){
         // Make container relative
         if (!containerIsWindow && $(params.container).css('position') === 'static') {
           $(params.container).css('position', 'relative');
         }
-        
+
         // Update Viewport dimensions
         $container = $(params.container);
         containerHeight = $container.height();
         containerWidth = $container.width();
         containerBottom = $container.scrollTop() + containerHeight;
         containerRight = $container.scrollLeft() + containerWidth;
-        
+
         // Update element dimensions & position
         elHeight = $el.outerHeight(true);
         elWidth = $el.outerWidth(true);
@@ -162,7 +167,7 @@
           elTop = position.top;
           elLeft = position.left;
         }
-        
+
         // Update scroll position
         scrollTop = $container.scrollTop();
         scrollLeft = $container.scrollLeft();
@@ -184,14 +189,21 @@
             'Height: ' + elHeight
           );
         }
-        
+
         if (directionIn()) {
           if (params.toggleClass) {
             $el.addClass(params.toggleClass);
           }
+
           if ($.isFunction(params.doIn)) {
             params.doIn.call($el[0]);
           }
+          if ($.isFunction(params.doInOnce)) {
+            params.doInOnce.call($el[0]);
+            // after you're done doing the function, let's remove it
+            params.doInOnce = undefined
+          }
+
           if (params.lazyAttr && $el.prop('tagName') === 'IMG') {
             var lazyImg = $el.attr(params.lazyAttr);
             if (lazyImg !== $el.prop('src')) {
@@ -209,7 +221,7 @@
             }
           }
           isOnScreen = true;
-        } 
+        }
         else if (directionOut()) {
           if (params.toggleClass) {
             $el.removeClass(params.toggleClass);
@@ -219,15 +231,15 @@
           }
           isOnScreen = false;
         }
-        
+
       };
-      
+
       if (window.location.hash) {
         throttle(checkPos, 50);
       } else {
         checkPos();
       }
-      
+
       if (params.throttle) {
         checkPos = throttle(checkPos, params.throttle);
       }
@@ -251,7 +263,7 @@
           define('jquery-onscreen', [], function() { return jQuery; });
         }
       }
-      
+
     });
   };
 

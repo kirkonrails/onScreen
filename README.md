@@ -1,3 +1,13 @@
+My Fork Changes
+================
+
+I've added the functionallity to this awesome plugin so that you can
+fire an onScreen event just once. Kind of like jQuery.one() for events
+
+It's the exact same as doIn() only you call doInOnce() and it will remove it after
+the first execution.
+
+
 onScreen
 ========
 
