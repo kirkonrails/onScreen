@@ -7,6 +7,8 @@ fire an onScreen event just once. Kind of like jQuery.one() for events
 It's the exact same as doIn() only you call doInOnce() and it will remove it after
 the first execution.
 
+For more information or questions [please visit my website kirkquesnelle.com](http://www.kirkquesnelle.com).
+
 
 onScreen
 ========
